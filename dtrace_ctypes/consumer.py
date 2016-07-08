@@ -12,11 +12,11 @@ from dtrace_ctypes.dtrace_structs import dtrace_bufdata, dtrace_probedata, \
     dtrace_aggdata, dtrace_recdesc
 from threading import Thread
 import threading
-import time
+import ctypes
 
 cdll.LoadLibrary("libdtrace.so")
 
-LIBRARY = CDLL("libdtrace.so")
+LIBRARY = CDLL("libdtrace.so",mode=ctypes.RTLD_GLOBAL)
 
 # =============================================================================
 # chewing and output walkers

@@ -15,8 +15,9 @@ try:
 
     BUILD_EXTENSION = {'build_ext': build_ext}
     EXT_MODULES = [Extension("dtrace", ["dtrace_cython/dtrace_h.pxd",
-                                        "dtrace_cython/consumer.pyx"],
-                             libraries=["dtrace"])]
+                             "dtrace_cython/consumer.pyx"],
+                             libraries=["dtrace","proc","ctf","elf","z","rtld_db","pthread","util"],
+                             include_dirs=['/sys/cddl/compat/opensolaris','/sys/cddl/contrib/opensolaris/uts/common','/usr/src/cddl/contrib/opensolaris/lib/libdtrace/common'])]
 
 except ImportError:
     BUILD_EXTENSION = {}
