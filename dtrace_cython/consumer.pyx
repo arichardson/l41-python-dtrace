@@ -333,6 +333,11 @@ cdef class DTraceConsumer:
                             dtrace_errmsg(self.handle,
                                           dtrace_errno(self.handle)))
 
+    def setopt(self, key, value):
+        if dtrace_setopt(self.handle, key, value) != 0:
+            raise Exception(dtrace_errmsg(self.handle,
+                                          dtrace_errno(self.handle)))
+
 
 cdef class DTraceContinuousConsumer:
     """
@@ -433,6 +438,11 @@ cdef class DTraceContinuousConsumer:
                                           dtrace_errno(self.handle)))
 
         return status
+
+    def setopt(self, key, value):
+        if dtrace_setopt(self.handle, key, value) != 0:
+            raise Exception(dtrace_errmsg(self.handle,
+                                          dtrace_errno(self.handle)))
 
 
 class DTraceConsumerThread(Thread):

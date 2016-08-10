@@ -16,7 +16,9 @@ import ctypes
 
 cdll.LoadLibrary("libdtrace.so")
 
-LIBRARY = CDLL("libdtrace.so",mode=ctypes.RTLD_GLOBAL)
+LIBRARY = CDLL("libdtrace.so")
+        
+dtrace_open = LIBRARY.dtrace_open
 
 # =============================================================================
 # chewing and output walkers
@@ -136,7 +138,8 @@ class DTraceConsumer(object):
             self.buf_out = BUFFERED_FUNC(simple_buffered_out_writer)
 
         # get dtrace handle
-        self.handle = LIBRARY.dtrace_open(3, 0, byref(c_int(0)))
+        err = c_int(0)
+        self.handle = dtrace_open(3, 0, byref(err))
         if self.handle is None:
             raise Exception('Unable to get a DTrace handle.')
 
