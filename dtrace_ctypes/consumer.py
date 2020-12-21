@@ -17,7 +17,6 @@ import ctypes
 cdll.LoadLibrary("libdtrace.so")
 
 LIBRARY = CDLL("libdtrace.so")
-        
 dtrace_open = LIBRARY.dtrace_open
 
 # =============================================================================
