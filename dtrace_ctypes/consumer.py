@@ -43,6 +43,7 @@ WALK_FUNC = CFUNCTYPE(c_int,
                       c_void_p)
 
 
+@CHEW_FUNC
 def simple_chew_func(data, arg):
     """
     Callback for chew.
@@ -51,6 +52,7 @@ def simple_chew_func(data, arg):
     return 0
 
 
+@CHEWREC_FUNC
 def simple_chewrec_func(data, rec, arg):
     """
     Callback for record chewing.
@@ -60,6 +62,7 @@ def simple_chewrec_func(data, rec, arg):
     return 0
 
 
+@BUFFERED_FUNC
 def simple_buffered_out_writer(bufdata, arg):
     """
     In case dtrace_work is given None as filename - this one is called.
@@ -69,6 +72,7 @@ def simple_buffered_out_writer(bufdata, arg):
     return 0
 
 
+@WALK_FUNC
 def simple_walk(data, arg):
     """
     Aggregate walker capable of reading a name and one value.
@@ -220,17 +224,17 @@ class DTraceConsumer(object):
         if chew_rec_func is not None:
             self.chew_rec = CHEWREC_FUNC(chew_rec_func)
         else:
-            self.chew_rec = CHEWREC_FUNC(simple_chewrec_func)
+            self.chew_rec = simple_chewrec_func
 
         if walk_func is not None:
             self.walk = WALK_FUNC(walk_func)
         else:
-            self.walk = WALK_FUNC(simple_walk)
+            self.walk = simple_walk
 
         if out_func is not None:
             self.buf_out = BUFFERED_FUNC(out_func)
         else:
-            self.buf_out = BUFFERED_FUNC(simple_buffered_out_writer)
+            self.buf_out = simple_buffered_out_writer
 
         # get dtrace handle
         self.handle = _dtrace_open()
@@ -327,22 +331,22 @@ class DTraceConsumerThread(Thread):
         if chew_func is not None:
             self.chew = CHEW_FUNC(chew_func)
         else:
-            self.chew = CHEW_FUNC(simple_chew_func)
+            self.chew = simple_chew_func
 
         if chew_rec_func is not None:
             self.chew_rec = CHEWREC_FUNC(chew_rec_func)
         else:
-            self.chew_rec = CHEWREC_FUNC(simple_chewrec_func)
+            self.chew_rec = simple_chewrec_func
 
         if walk_func is not None:
             self.walk = WALK_FUNC(walk_func)
         else:
-            self.walk = WALK_FUNC(simple_walk)
+            self.walk = simple_walk
 
         if out_func is not None:
             self.buf_out = BUFFERED_FUNC(out_func)
         else:
-            self.buf_out = BUFFERED_FUNC(simple_buffered_out_writer)
+            self.buf_out = simple_buffered_out_writer
 
         # get dtrace handle
         self.handle = _dtrace_open()
