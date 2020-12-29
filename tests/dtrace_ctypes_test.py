@@ -19,7 +19,7 @@ class TestDTraceConsumer(unittest.TestCase):
     """
 
     def setUp(self):
-        self.out = ''
+        self.out = b''
         self.consumer = consumer.DTraceConsumer(out_func=self._get_output)
 
     def test_run_for_success(self):
@@ -31,5 +31,5 @@ class TestDTraceConsumer(unittest.TestCase):
 
     def _get_output(self, data, arg):
         tmp = c_char_p(data.contents.dtbda_buffered).value.strip()
-        self.out = tmp
+        self.out += tmp
         return 0
