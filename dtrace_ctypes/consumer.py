@@ -10,7 +10,7 @@ import platform
 import threading
 import time
 from ctypes import (byref, c_char_p, c_int, c_uint, c_void_p, cast, cdll,
-                    CFUNCTYPE, POINTER)
+                    CDLL, CFUNCTYPE, POINTER)
 from threading import Thread
 
 from dtrace_ctypes.dtrace_structs import (dtrace_aggdata, dtrace_bufdata,
@@ -182,6 +182,13 @@ def _dtrace_open():
     return handle
 
 
+def _get_dtrace_work_fp():
+    if platform.system().startswith("Darwin"):
+        # Note: macOS crashes if we pass NULL for fp (FreeBSD works fine)
+        # TODO: use a pipe to get output
+        return c_void_p.in_dll(CDLL('libc.dylib'), '__stderrp')
+    return c_void_p(None)
+
 class DTraceConsumer(object):
     """
     A Pyton based DTrace consumer.
@@ -260,8 +267,8 @@ class DTraceConsumer(object):
         i = 0
         while i < runtime:
             LIBRARY.dtrace_sleep(self.handle)
-            status = LIBRARY.dtrace_work(self.handle, None, self.chew,
-                                         self.chew_rec, None)
+            status = LIBRARY.dtrace_work(self.handle, _get_dtrace_work_fp(),
+                                         self.chew, self.chew_rec, None)
             if status == DTRACE_WORKSTATUS_ERROR:
                 raise Exception('dtrace_work failed: ',
                                 get_error_msg(self.handle))
@@ -279,7 +286,6 @@ class DTraceConsumer(object):
                                                    None) != 0:
             raise Exception('Failed to walk the aggregate: ',
                             get_error_msg(self.handle))
-
 
 class DTraceConsumerThread(Thread):
     """
@@ -357,8 +363,8 @@ class DTraceConsumerThread(Thread):
         # aggregate data for a few sec...
         while not self.stopped():
             LIBRARY.dtrace_sleep(self.handle)
-            status = LIBRARY.dtrace_work(self.handle, None, self.chew,
-                                         self.chew_rec, None)
+            status = LIBRARY.dtrace_work(self.handle, _get_dtrace_work_fp(),
+                                         self.chew, self.chew_rec, None)
             if status == DTRACE_WORKSTATUS_ERROR:
                 raise Exception('dtrace_work failed: ',
                                 get_error_msg(self.handle))
